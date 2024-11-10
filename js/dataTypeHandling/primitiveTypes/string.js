@@ -26,10 +26,14 @@
  */
 
 export function randomString(schema, view = "") {
+  // Define string length within specified range
   const minLength = schema.minLength || 5;
   const maxLength = schema.maxLength || 20;
   const length = Math.floor(Math.random() * (maxLength - minLength + 1)) + minLength;
+
   let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  // Modify `character` set according to `view`
   switch (view) {
     case "lowercase": {
       characters = characters.slice(26, 52);
@@ -44,6 +48,7 @@ export function randomString(schema, view = "") {
     }
   }
 
+  // Generate random string of specified length
   let str = "";
   for (let i = 0; i < length; i++) {
     str += characters.charAt(Math.floor(Math.random() * characters.length));

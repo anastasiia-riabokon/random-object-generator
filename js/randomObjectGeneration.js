@@ -15,7 +15,7 @@
 import {dataTypeHandling} from "./dataTypeHandling/dataTypeHandling.js";
 
 export function randomObjectGeneration(schema, userObject) {
-  // Перевірка на валідність схеми
+  // Checking the scheme for validity
   if (typeof schema !== "object" || schema === null || Object.keys(schema).length === 0)
     return null;
 

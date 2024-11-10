@@ -25,11 +25,13 @@ import {generateBoolean} from "./primitiveTypes/boolean.js";
 export function dataTypeHandling(schema, definitions, userObject) {
   const defs = definitions || schema.definitions;
 
+  // if anyOf is found, choose a random type from the array and handle it
   if (schema.anyOf) {
     const selectedSchema = schema.anyOf[Math.floor(Math.random() * schema.anyOf.length)];
     return dataTypeHandling(selectedSchema, defs, userObject);
   }
 
+  // If $ref is found, retrieve the reference from `definitions` and handle it recursively
   if (schema.$ref) {
     const refName = schema.$ref.replace("#", "");
     if (defs && defs[refName]) {
@@ -37,11 +39,13 @@ export function dataTypeHandling(schema, definitions, userObject) {
     }
   }
 
+  // if enum found, pick a random value from the array
   if (schema.enum) {
     const selectedSchema = schema.enum[Math.floor(Math.random() * schema.enum.length)];
     return selectedSchema;
   }
 
+  // Generate data according to the provided type
   switch (schema.type) {
     case "integer": {
       return randomNumberInt({schema, minimum: 0, maximum: 1000000});

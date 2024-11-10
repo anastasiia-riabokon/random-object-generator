@@ -45,6 +45,7 @@ export function randomArray(schema, min, max, defs) {
     let item = dataTypeHandling(schemaItems, defs);
     if (uniqueItems) {
       while (array.includes(item)) {
+        // Generate a new item if the current one is already in the array
         item = dataTypeHandling(schemaItems, defs);
       }
     }

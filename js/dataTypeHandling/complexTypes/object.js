@@ -31,12 +31,15 @@ export function randomObject(schema, defs, userObject) {
   for (const key in properties) {
     const property = properties[key];
 
+    // Generate required fields if specified in schema
     if (schema.required && schema.required.includes(key)) {
       object[key] = dataTypeHandling(property, defs);
     } else {
+      // Add data for non-required field
       object[key] = dataTypeHandling(property, defs);
     }
 
+    // Overwriting properties based on key-specific logic
     switch (key) {
       case "startDate": {
         object[key] = generateDate("start", userObject?.startDate);
@@ -62,7 +65,8 @@ export function randomObject(schema, defs, userObject) {
       }
 
       case "priorProbability": {
-        if (object[key] || object[key] === null) {
+        // if provided priorProbability is available, otherwise generate random number
+        if (object[key] === undefined || object[key] === null) {
           object[key] = randomNumberInt({num: userObject?.priorProbability});
         }
         break;
@@ -76,6 +80,6 @@ export function randomObject(schema, defs, userObject) {
         break;
     }
   }
-
+  // Return object with all fields filled according to schema specifications
   return object;
 }

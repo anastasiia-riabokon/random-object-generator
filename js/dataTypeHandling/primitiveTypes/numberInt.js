@@ -30,12 +30,15 @@
 
 export function randomNumberInt({schema, minimum = 0, maximum = 100, num}) {
   if (num) {
+    // validation `num`
     if (typeof num !== "number") return null;
     return num;
   }
 
+  // validation `minimum` and `maximum`
   if (typeof maximum !== "number" || typeof minimum !== "number") return null;
 
+  // Define random number within specified range
   const min = schema && schema.minimum ? schema.minimum : minimum;
   const max = schema && schema.maximum ? schema.maximum : maximum;
   const random = Math.floor(Math.random() * (max - min + 1)) + min;
@@ -75,8 +78,8 @@ export function generateDate(mark, date) {
     return date;
   }
 
-  const start = new Date();
-  const end = new Date(start.getTime() + 1000000000);
+  const start = new Date(); // default starting date (now)
+  const end = new Date(start.getTime() + 1000000000); // default ending date (+ day 11)
 
   let timestamp;
   switch (mark) {
@@ -93,5 +96,5 @@ export function generateDate(mark, date) {
 
   timestamp = new Date(timestamp);
 
-  return Math.floor(timestamp.getTime() / 1000);
+  return Math.floor(timestamp.getTime() / 1000); // Date in UNIX format
 }
