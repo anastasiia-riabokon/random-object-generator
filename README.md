@@ -9,9 +9,9 @@ The `randomObjectGeneration` function creates random data objects according to a
 
 **Returns**: A random data object or `null` if the schema is invalid.
 
-The `dataTypeHandling` function is used within the schema to generate data of specified types. It interacts with several helper functions:
+The `dataTypeHandling(schema: object, definitions: object, userObject: object): any` function is used within the schema to generate data of specified types. It interacts with several helper functions:
 
-  * `randomNumberInt({schema: object, minimum: number, maximum: number, num: number}): number|null`: Generates a random number within a specified range or returns num if provided.
+  * `randomNumberInt({schema: object, minimum: number, maximum: number, num: number}): number|null`: Generates a random number within a specified range or returns `num` if provided.
 
   * `randomString(schema: object, view: string | undefined): string`: Generates a random string based on the specified view:
     * `"lowercase"` - a random string containing only lowercase letters.
@@ -22,14 +22,14 @@ The `dataTypeHandling` function is used within the schema to generate data of sp
 
   * `generateBoolean(userBoolean: boolean): boolean`: Generates a random boolean or returns `userBoolean` if provided.
 
-  * `randomArray(schema: object, min: number, max: number, defs: object): array`: Generates an array with random length between `min` and `max`, or based on `schema.minItems` and `schema.maxItems`.
+  * `randomArray(schema: object, min: number, max: number, defs: object): any[]`: Generates an array with random length between `min` and `max`, or based on `schema.minItems` and `schema.maxItems`.
 
   * `randomObject(schema: object, defs: object, userObject: object): object`: Generates an object with random values or the specified values from userObject. This function relies on additional helper functions for specific data generation needs:
     * `generateDate(mark: string, date: number | undefined): number`: Generates a random date or returns date if provided, based on `mark`:
       * `"start"` - starting date.
       * `"end"` - ending date.
 
-    * `generateTags(userTags: array, min: number | undefined, max: number | undefined): array`: Generates an array of random length between `min` and `max` or returns the specified tags if provided.
+    * `generateTags(userTags: any[], min: number | undefined, max: number | undefined): any[]`: Generates an array of random length between `min` and `max` or returns the specified tags if provided.
 
     * `randomTitle(userTitle: string): string`: Returns `userTitle` if provided, or generates a random title.
 
@@ -302,128 +302,26 @@ randomObjectGeneration(schema, userObject);
 } 
 ```
 
-## Function testing
+## Testing Instructions
 
-### Test: `randomObjectGeneration()`
+### Running the Tests
 
-#### Test Case Description:
+To run the tests for the `randomObjectGeneration` function, follow these steps:
 
-* Purpose: To test the `randomObjectGeneration` function, which generates an object based on a given JSON schema. The tests verify that the function respects the constraints defined in the schema.
+1. **Open the terminal** in your project directory.
+2. **Run the test script** using Node.js with the following command:
 
-* Constraints/Edge Cases:
-  * The function should handle `null` or empty schema gracefully.
-  * It should respect the required fields and generate all properties defined in the schema.
-  * When given a user object, it should allow for field overwriting.
+   ```
+   node runningTest.js
+   ```
 
-* Expected Outcome:
-  * If the schema is `null` or empty, the function returns null.
-  * If a valid schema is provided, it generates an object with the necessary fields and respects required properties.
-  * If a `userObject` is provided, it overwrites the default values with the user-provided ones.
+### What Happens After Running the Tests
 
-#### Validation Steps:
+- The terminal output will display the result of running each test case.
+- For each test case, you will see whether it passed or failed, with an explanation of the reason for the result (e.g., "✕ test testName: expected `true`, but got `false`").
+  
+### Where to Find More Information
 
-  1. Test for Invalid Object (Null Schema):
-
-      * Step: Pass null as the schema and check the result.
-      * Expected Outcome: The function should return `null`.
-      * Test Validation: `outputTestResult(randomObjectGeneration(null), null, "Returns null if schema is not an object")`.
-
-  2. Test for Valid Object (Valid Schema):
-
-      * Step: Pass a valid schema (`mockSchema`) and check the result.
-      * Expected Outcome: The function should return an object.
-      * Test Validation: `outputTestResult(resultGeneratedObject && typeof resultGeneratedObject === "object", true, "Returns an object with a valid schema")`.
-
-  3. Test for Empty Schema:
-
-      * Step: Pass an empty schema (`{}`) and check the result.
-      * Expected Outcome: The function should return `null` because an empty schema cannot generate an object.
-      * Test Validation: `outputTestResult(randomObjectGeneration({}), null, "Returns null if the schema is empty")`.
-
-  4. Test for Required Properties:
-
-      * Step: Check if the generated object contains all properties listed as required in the schema.
-      * Expected Outcome: The object should contain all the required properties.
-      * Test Validation: `outputTestResult(resultRequiredProperties.length === 0, true, "Check for mandatory fields")`.
-
-  5. Test for All Properties:
-
-      * Step: Ensure all properties defined in the schema are present in the generated object.
-      * Expected Outcome: The object should contain all properties listed in the `mockSchema.properties`.
-      * Test Validation: `outputTestResult(missingProperties.length === 0, true, "Generates all fields from the schema")`.
-
-  6. Test for Field Rewriting (User Object):
-
-      * Step: Pass a user object with custom values and check if those values are applied to the generated object.
-      * Expected Outcome: The object should match the userObject values where provided.
-      * Test Validation: `outputTestResult(resultWithUserObject.title === userObject.title, true, "Check for using the specified value instead of the default")`.
-
-  7. Test for Empty User Object:
-
-      * Step: Pass an empty user object and check if a valid object is still generated.
-      * Expected Outcome: The function should return a valid object based on the schema.
-      * Test Validation: `outputTestResult(resultWithEmptyUserObject && typeof resultWithEmptyUserObject === "object", true, "Generates an object when userObject is empty")`.
-
-### Test: `dataTypeHandling()`
-
-#### Test Case Description:
-
-* Purpose: To test `dataTypeHandling` function, which generates data according to the specified data types in the JSON schema (e.g. number, string, boolean). It also resolves $ref and handles conditional schemas like anyOf and enum.
-
-* Constraints/Edge Cases:
-  * The schema may include references to other schemas via $ref.
-  * The schema may define multiple possible types using anyOf, which the function should handle by selecting one randomly.
-  * The function should handle both mandatory and optional fields when generating objects.
-  * The function should respect pattern constraints when generating strings.
-
-#### Validation Steps:
-
-  1. Test anyOf Handling:
-
-      * Step: Call `dataTypeHandling` with a schema that includes anyOf and check the result.
-      * Expected Outcome: The function should return a value according to one of the schemas in the `anyOf` array.
-
-  2. Test $ref Resolution:
-
-      * Step: Call dataTypeHandling with a schema that includes a `$ref` to another definition and check the result.
-      * Expected Outcome: The function should resolve the `$ref` and generate data according to the referenced schema.
-
-  3. Test enum Handling:
-
-      * Step: Call `dataTypeHandling` with a schema that has an `enum` property.
-      * Expected Outcome: The function should return a random value from the enum array.
-
-  4. Test Integer Type:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `integer`.
-      * Expected Outcome: The function should return an integer within the defined range.
-
-  5. Test String Type with Pattern:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `string` and a `pattern`.
-      * Expected Outcome: The function should return a string matching the specified pattern.
-
-  6. Test String Type without Pattern:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `string` without a pattern.
-      * Expected Outcome: The function should return a random string.
-
-  7. Test Boolean Type:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `boolean`.
-      * Expected Outcome: The function should return a boolean value.
-
-  8. Test Array Type:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `array`.
-      * Expected Outcome: The function should return an array with random items based on the schema.
-
-  9. Test Object Type:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `object`.
-      * Expected Outcome: The function should return an object that matches the defined properties and required fields.
-
-  10. Test Null Type:
-
-      * Step: Call `dataTypeHandling` with a schema that specifies `null`.
-      * Expected Outcome: The function should return null
+- **Test Descriptions**: You can find a detailed description of each test case, including its purpose, expected outcome, and edge cases, in the `README_TEST.md` file.
+  
+- **Source Code**: All the test implementations are located in the `tests` folder.

@@ -73,7 +73,7 @@ export function randomObject(schema, defs, userObject) {
       }
 
       case "readOnly": {
-        if (object[key]) object[key] = generateBoolean(userObject?.readOnly);
+        if (object[key] !== undefined) object[key] = generateBoolean(userObject?.readOnly);
         break;
       }
       default:

@@ -12,6 +12,7 @@
  * @returns {object|null} Згенерований об'єкт з випадковими даними або null, якщо schema не є об'єктом
  */
 
+import {mockSchema} from "../data/constants.js";
 import {dataTypeHandling} from "./dataTypeHandling/dataTypeHandling.js";
 
 export function randomObjectGeneration(schema, userObject) {
